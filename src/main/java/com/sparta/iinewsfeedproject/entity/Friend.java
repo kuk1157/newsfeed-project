@@ -30,5 +30,5 @@ public class Friend extends Timestamped  {
 
     @Column(name="friendRequest", nullable = false)
     @Comment(value = "친구요청 승인 여부 (Y : 승인 / N : 거절)")
-    private String use_yn;
+    private String friendRequest;
 }
