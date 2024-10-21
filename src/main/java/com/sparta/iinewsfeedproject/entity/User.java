@@ -1,6 +1,7 @@
 package com.sparta.iinewsfeedproject.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,7 +23,7 @@ public class User extends Timestamped  {
     private Long id;
     @OneToMany(mappedBy = "from_user_id")
     private List<Friend> friend = new ArrayList<>();
-    @OneToMany(mappedBy = "user_id")
+    @OneToMany(mappedBy = "user")
     private List<Post> post = new ArrayList<>();
 
     @Column(name="name")
@@ -41,4 +42,13 @@ public class User extends Timestamped  {
     @Comment(value = "삭제일 - Null 유무로 탈퇴 체크")
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime deletedAt;
+
+    public User(String username, String email) {
+        this.name = username;
+        this.email = email;
+    }
+
+    public void savePassword(String password) {
+        this.password = password;
+    }
 }
