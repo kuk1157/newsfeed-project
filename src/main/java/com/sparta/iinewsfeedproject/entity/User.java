@@ -47,4 +47,13 @@ public class User extends Timestamped  {
     @Comment(value = "삭제일 - Null 유무로 탈퇴 체크")
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime deletedAt;
+
+    public User(String username, String email) {
+        this.name = username;
+        this.email = email;
+    }
+
+    public void savePassword(String password) {
+        this.password = password;
+    }
 }
