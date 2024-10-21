@@ -36,7 +36,7 @@ public class AuthFilter implements Filter {
 
         if (StringUtils.hasText(url) &&
                 // 게시물 단건, 다건 조회시에도 토큰 검사 건너뛰도록 함
-                (url.startsWith("/api/users/login") || url.startsWith("/api/users/signup") || (url.startsWith("/api/posts/") && httpServletRequest.getMethod().equalsIgnoreCase("GET")))
+                (url.startsWith("/api/users/login") || url.startsWith("/api/users/signup") || (url.startsWith("/api/posts") && httpServletRequest.getMethod().equalsIgnoreCase("GET")))
         ) {
             chain.doFilter(request, response);
         } else {
