@@ -19,7 +19,6 @@ public class Post extends Timestamped  {
 
     @JoinColumn(name="user_id" , referencedColumnName = "id")
     @Comment(value = "유저 고유번호 - 유저 테이블과 연동")
-    private Long user_id;
     @ManyToOne // 유저테이블과 연관관계 설정
     private User user;
 
