@@ -17,4 +17,9 @@ public class PostService {
         Post post = new Post(postRequestDto.getContent(),user);
         return new PostResponseDto(postRepository.save(post));
     }
+
+    public PostResponseDto findOnePost(Long id) {
+        Post post = postRepository.findOnePost(id);
+        return new PostResponseDto(post);
+    }
 }
