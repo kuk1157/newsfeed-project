@@ -3,10 +3,12 @@ package com.sparta.iinewsfeedproject.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 @Entity
 @Getter
+@Setter
 @Table(name="post")
 @NoArgsConstructor
 public class Post extends Timestamped  {
