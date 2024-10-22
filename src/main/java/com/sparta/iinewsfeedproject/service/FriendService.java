@@ -1,6 +1,4 @@
 package com.sparta.iinewsfeedproject.service;
-
-import com.sparta.iinewsfeedproject.dto.FriendDto;
 import com.sparta.iinewsfeedproject.entity.Friend;
 import com.sparta.iinewsfeedproject.entity.User;
 import com.sparta.iinewsfeedproject.exception.FriendNotFoundException;
@@ -34,7 +32,6 @@ public class FriendService {
 
     public FriendResponseDto createFriend(FriendRequestDto requestDto, User fromUser) {
         Long toUserId = requestDto.getToUserId();
-        getAcceptedFriends(toUserId);
         int count = friendRepository.findByToUserIdAndStatus(toUserId);
         int allCount = friendRepository.findAllById();
         if(count != 0 && allCount != 0){
@@ -60,4 +57,6 @@ public class FriendService {
                 })
                 .collect(Collectors.toList());
     }
+
+
 }
