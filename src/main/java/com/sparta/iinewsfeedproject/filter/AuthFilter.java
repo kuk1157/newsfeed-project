@@ -36,7 +36,7 @@ public class AuthFilter implements Filter {
 
         if (StringUtils.hasText(url) &&
                 // 게시물 단건, 다건 조회시에도 토큰 검사 건너뛰도록 함
-                (url.startsWith("/api/users/login") || url.startsWith("/api/users/signup") || (url.startsWith("/api/posts") && httpServletRequest.getMethod().equalsIgnoreCase("GET")))
+                (url.startsWith("/api/users/login") || url.equals("/api/users") || (url.startsWith("/api/posts") && httpServletRequest.getMethod().equalsIgnoreCase("GET")))
         ) {
             chain.doFilter(request, response);
         } else {
@@ -47,7 +47,7 @@ public class AuthFilter implements Filter {
 
                 if (!jwtUtil.validateToken(token)) {
                     httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                    httpServletResponse.getWriter().write("유효하지 않은 토큰입니다");
+                    httpServletResponse.getWriter().write("재 로그인이 필요합니다");
                     return;
                 }
 
@@ -61,7 +61,7 @@ public class AuthFilter implements Filter {
                 chain.doFilter(request, response);
             } else {
                 httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                httpServletResponse.getWriter().write("토큰을 찾을 수 없습니다");
+                httpServletResponse.getWriter().write("재 로그인이 필요합니다");
             }
         }
     }
