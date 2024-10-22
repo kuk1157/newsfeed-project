@@ -38,7 +38,7 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<List<PostPagingResponseDto>> findAllPosts(@RequestParam(defaultValue = "1",value = "page")int page, @RequestParam(defaultValue = "10",value = "size")int size) {
-        Pageable pageable = PageRequest.of(page-1, size, Sort.Direction.DESC,"updatedAt");
+        Pageable pageable = PageRequest.of(page-1, size, Sort.Direction.DESC,"createdAt");
         List<PostPagingResponseDto > postPagingResponseDtoList = postService.findAllPosts(pageable);
         return ResponseEntity.ok(postPagingResponseDtoList);
     }
