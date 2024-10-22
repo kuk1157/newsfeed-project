@@ -36,7 +36,7 @@ public class AuthFilter implements Filter {
 
         if (StringUtils.hasText(url) &&
                 // 게시물 단건, 다건 조회시에도 토큰 검사 건너뛰도록 함
-                (url.startsWith("/api/users/login") || url.startsWith("/api/users") || (url.startsWith("/api/posts/") && httpServletRequest.getMethod().equalsIgnoreCase("GET")))
+                (url.startsWith("/api/users/login") || url.equals("/api/users") || (url.startsWith("/api/posts") && httpServletRequest.getMethod().equalsIgnoreCase("GET")))
         ) {
             chain.doFilter(request, response);
         } else {
@@ -60,7 +60,7 @@ public class AuthFilter implements Filter {
                 request.setAttribute("user", user);
                 chain.doFilter(request, response);
             } else {
-                httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 httpServletResponse.getWriter().write("재 로그인이 필요합니다");
             }
         }

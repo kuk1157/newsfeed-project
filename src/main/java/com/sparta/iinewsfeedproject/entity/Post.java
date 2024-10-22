@@ -1,6 +1,7 @@
 package com.sparta.iinewsfeedproject.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,5 +36,9 @@ public class Post extends Timestamped  {
     public Post(String content, User user) {
         this.content = content;
         this.user = user;
+    }
+
+    public void modifyContent(@NotBlank(message = "내용을 입력해주세요") String content) {
+        this.content = content;
     }
 }

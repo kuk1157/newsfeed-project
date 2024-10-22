@@ -25,7 +25,7 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<PostResponseDto> createPost(@RequestBody @Valid PostRequestDto postRequestDto, HttpServletRequest request) {
-        User user = (User)request.getAttribute("user");
+        User user = getUser(request);
         PostResponseDto post = postService.createPost(postRequestDto, user);
         return ResponseEntity.status(HttpStatus.CREATED).body(post);
     }
@@ -41,5 +41,16 @@ public class PostController {
         Pageable pageable = PageRequest.of(page-1, size, Sort.Direction.DESC,"updatedAt");
         List<PostPagingResponseDto > postPagingResponseDtoList = postService.findAllPosts(pageable);
         return ResponseEntity.ok(postPagingResponseDtoList);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> modifyPost(@PathVariable Long id, @RequestBody @Valid PostRequestDto postRequestDto, HttpServletRequest request) {
+        User user = getUser(request);
+        postService.modifyPost(id,postRequestDto,user);
+        return ResponseEntity.noContent().build();
+    }
+
+    public User getUser(HttpServletRequest request) {
+        return (User)request.getAttribute("user");
     }
 }

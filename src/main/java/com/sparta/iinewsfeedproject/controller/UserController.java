@@ -17,7 +17,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<UserResponseDto> registerUser(@RequestBody SignupRequestDto reqDto) {
         return  ResponseEntity
                 .status(HttpStatus.CREATED)
