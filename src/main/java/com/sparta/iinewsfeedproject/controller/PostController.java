@@ -1,5 +1,6 @@
 package com.sparta.iinewsfeedproject.controller;
 
+import com.sparta.iinewsfeedproject.dto.PostPagingResponseDto;
 import com.sparta.iinewsfeedproject.dto.PostRequestDto;
 import com.sparta.iinewsfeedproject.dto.PostResponseDto;
 import com.sparta.iinewsfeedproject.entity.User;
@@ -7,9 +8,14 @@ import com.sparta.iinewsfeedproject.service.PostService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -28,5 +34,12 @@ public class PostController {
     public ResponseEntity<PostResponseDto> findOnePost(@PathVariable Long id) {
         PostResponseDto responseDto = postService.findOnePost(id);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PostPagingResponseDto>> findAllPosts(@RequestParam(defaultValue = "1",value = "page")int page, @RequestParam(defaultValue = "10",value = "size")int size) {
+        Pageable pageable = PageRequest.of(page-1, size, Sort.Direction.DESC,"updatedAt");
+        List<PostPagingResponseDto > postPagingResponseDtoList = postService.findAllPosts(pageable);
+        return ResponseEntity.ok(postPagingResponseDtoList);
     }
 }
