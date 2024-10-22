@@ -28,12 +28,18 @@ public class Friend extends Timestamped  {
     @Comment(value = "요청 받는 사람의 아이디")
     private Long toUserId;
 
-    // [ to_id 튜터님이 ERD 리뷰하실때 마지막이 기억이 안나서 일단 주석처리 해뒀는데 나중에 필요하면 넣으면 될듯합니다.
-    // @Column(name="to_id")
-    // @Comment(value = "요청 받는 사람의 아이디")
-    // private String to_id;
+    @Column(name="status", nullable = false)
+    @Comment(value = "친구요청 승인 여부 (PENDING : 대기(기본값), ACCEPT : 승인 / REJECT : 거절)")
+    private String status;
 
     @Column(name="status", nullable = false)
     @Comment(value = "친구요청 승인 여부 (PENDING : 대기(기본값), ACCEPT : 승인 / REJECT : 거절)")
     private String status;
+
+    public Friend(Long toUserId, String status, User fromUser) {
+        this.toUserId = toUserId;
+        this.status = status;
+        this.fromUser = fromUser;
+    }
+
 }
