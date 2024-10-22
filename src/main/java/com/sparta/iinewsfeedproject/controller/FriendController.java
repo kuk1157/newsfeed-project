@@ -45,13 +45,6 @@ public class FriendController {
         return friendService.updateFriend(friendId,requestDto);
     }
 
-
-    @GetMapping("")
-    public ResponseEntity<List<FriendResponseDto>> getFriends() {
-        List<FriendResponseDto> responseDto = friendService.getFriends();
-        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
-    }
-
     @DeleteMapping ("/{fromUserId}/friend/{userId}")
     public ResponseEntity<Void> deleteFriend(@PathVariable Long fromUserId, @PathVariable Long userId) {
         friendService.deleteFriend(fromUserId, userId);

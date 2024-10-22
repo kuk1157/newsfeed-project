@@ -19,9 +19,9 @@ public class User extends Timestamped  {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Comment(value = "유저 고유번호")
     private Long id;
-    @OneToMany(mappedBy = "from_user_id")
+    @OneToMany(mappedBy = "fromUser")
     private List<Friend> friend = new ArrayList<>();
-    @OneToMany(mappedBy = "user_id")
+    @OneToMany(mappedBy = "user")
     private List<Post> post = new ArrayList<>();
 
     @Column(name="name")
