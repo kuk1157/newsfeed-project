@@ -4,7 +4,6 @@ import com.sparta.iinewsfeedproject.dto.*;
 import com.sparta.iinewsfeedproject.exception.UserNotFoundException;
 import com.sparta.iinewsfeedproject.service.FriendService;
 import com.sparta.iinewsfeedproject.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -38,6 +38,7 @@ public class UserController {
                 .status(HttpStatus.OK)
                 .body(userService.updateName(name, httpReq));
     }
+
     @PostMapping("/login")
     public ResponseEntity<UserResponseDto> loginUser(@RequestBody LoginRequestDto reqDto, HttpServletResponse res) {
         return ResponseEntity
