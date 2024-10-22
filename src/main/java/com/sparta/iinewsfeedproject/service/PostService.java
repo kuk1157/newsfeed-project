@@ -43,4 +43,10 @@ public class PostService {
         if(!post.getUser().getId().equals(user.getId())) throw new IllegalArgumentException("본인이 작성한 글만 수정 및 삭제할 수 있습니다.");
         post.modifyContent(postRequestDto.getContent());
     }
+
+    public void deletePost(Long id, User user) {
+        Post post = postRepository.findOnePost(id);
+        if(!post.getUser().getId().equals(user.getId())) throw new IllegalArgumentException("본인이 작성한 글만 수정 및 삭제할 수 있습니다.");
+        postRepository.delete(post);
+    }
 }

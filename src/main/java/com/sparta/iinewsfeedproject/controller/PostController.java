@@ -50,6 +50,13 @@ public class PostController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePost(@PathVariable Long id, HttpServletRequest request) {
+        User user = getUser(request);
+        postService.deletePost(id,user);
+        return ResponseEntity.noContent().build();
+    }
+
     public User getUser(HttpServletRequest request) {
         return (User)request.getAttribute("user");
     }
