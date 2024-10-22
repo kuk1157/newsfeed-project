@@ -26,7 +26,7 @@ public class UserService {
     public UserResponseDto signUp(SignupRequestDto reqDto){
         userRepository.findByEmail(reqDto.getEmail())
                 .ifPresent(user -> {
-                    throw new IllegalArgumentException("이미 존재하는 이메일입니다");
+                    throw new IllegalArgumentException("중복된 이메일 입니다");
                 });
 
         String password = passwordEncoder.encode(reqDto.getPassword());
@@ -34,6 +34,26 @@ public class UserService {
         user.savePassword(password);
 
         userRepository.save(user);
+
+        return new UserResponseDto(user);
+    }
+
+    public UserResponseDto login(LoginRequestDto reqDto, HttpServletResponse res){
+
+        User user = (User) userRepository.findByEmail(reqDto.getEmail()).orElseThrow(() ->
+                new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다")
+        );
+
+        if(!passwordEncoder.matches(reqDto.getPassword(), user.getPassword())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 일치하지 않습니다");
+        }
+
+        if(user.getDeletedAt() != null){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 유저는 찾을 수 없습니다");
+        }
+
+        String token = jwtUtil.createToken(reqDto.getEmail());
+        jwtUtil.addJwtToCookie(token, res);
 
         return new UserResponseDto(user);
     }

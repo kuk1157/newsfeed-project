@@ -35,7 +35,7 @@ public class AuthFilter implements Filter {
         String url = httpServletRequest.getRequestURI();
 
         if (StringUtils.hasText(url) &&
-                (url.startsWith("/api/users/login") || url.startsWith("/api/users/signup"))
+                (url.startsWith("/api/users/login") || url.equals("/api/users"))
         ) {
             chain.doFilter(request, response);
         } else {
@@ -46,7 +46,7 @@ public class AuthFilter implements Filter {
 
                 if (!jwtUtil.validateToken(token)) {
                     httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                    httpServletResponse.getWriter().write("유효하지 않은 토큰입니다");
+                    httpServletResponse.getWriter().write("재 로그인이 필요합니다");
                     return;
                 }
 
@@ -59,8 +59,8 @@ public class AuthFilter implements Filter {
                 request.setAttribute("user", user);
                 chain.doFilter(request, response);
             } else {
-                httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                httpServletResponse.getWriter().write("토큰을 찾을 수 없습니다");
+                httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                httpServletResponse.getWriter().write("재 로그인이 필요합니다");
             }
         }
     }
