@@ -26,7 +26,7 @@ public class UserService {
     public UserResponseDto signUp(SignupRequestDto reqDto){
         userRepository.findByEmail(reqDto.getEmail())
                 .ifPresent(user -> {
-                    throw new IllegalArgumentException("이미 존재하는 이메일입니다");
+                    throw new IllegalArgumentException("중복된 이메일입니다");
                 });
 
         String password = passwordEncoder.encode(reqDto.getPassword());

@@ -48,8 +48,8 @@ public class User extends Timestamped  {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime deletedAt;
 
-    public User(String username, String email) {
-        this.name = username;
+    public User(String name, String email) {
+        this.name = name;
         this.email = email;
     }
 
