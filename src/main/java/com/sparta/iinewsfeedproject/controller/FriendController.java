@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/friends")
@@ -31,6 +33,13 @@ public class FriendController {
         FriendResponseDto friend = friendService.createFriend(requestDto,fromUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(friend);
     }
+
+    @GetMapping("")
+    public ResponseEntity<List<FriendResponseDto>> getFriends() {
+        List<FriendResponseDto> responseDto = friendService.getFriends();
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
 
     @GetMapping("")
     public ResponseEntity<List<FriendResponseDto>> getFriends() {

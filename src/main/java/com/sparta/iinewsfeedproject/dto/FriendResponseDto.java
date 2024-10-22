@@ -14,6 +14,7 @@ public class FriendResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+
     public FriendResponseDto(Friend friend) {
         this.id = friend.getId();
         // 추후 로그인과 함께 확인
@@ -23,5 +24,4 @@ public class FriendResponseDto {
         this.createdAt = friend.getCreatedAt();
         this.updatedAt = friend.getUpdatedAt();
     }
-
 }
