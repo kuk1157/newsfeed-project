@@ -1,10 +1,10 @@
 package com.sparta.iinewsfeedproject.controller;
 
 import com.sparta.iinewsfeedproject.dto.*;
+import com.sparta.iinewsfeedproject.exception.IncorrectPasswordException;
 import com.sparta.iinewsfeedproject.exception.UserNotFoundException;
 import com.sparta.iinewsfeedproject.service.FriendService;
 import com.sparta.iinewsfeedproject.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -38,6 +39,7 @@ public class UserController {
                 .status(HttpStatus.OK)
                 .body(userService.updateName(name, httpReq));
     }
+
     @PostMapping("/login")
     public ResponseEntity<UserResponseDto> loginUser(@RequestBody LoginRequestDto reqDto, HttpServletResponse res) {
         return ResponseEntity
@@ -60,9 +62,21 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId, @RequestBody DeleteUserRequestDto deleteUserRequest) {
+        userService.deleteUser(userId, deleteUserRequest.getPassword());
+        return ResponseEntity.noContent().build();
+    }
+
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleUserNotFoundException(UserNotFoundException ex) {
         ErrorResponseDto errorResponse = new ErrorResponseDto(404, ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(IncorrectPasswordException.class)
+    public ResponseEntity<ErrorResponseDto> handleIncorrectPasswordException(IncorrectPasswordException ex) {
+        ErrorResponseDto errorResponse = new ErrorResponseDto(400, ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }

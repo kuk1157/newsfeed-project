@@ -1,4 +1,6 @@
 package com.sparta.iinewsfeedproject.service;
+
+import com.sparta.iinewsfeedproject.dto.FriendDto;
 import com.sparta.iinewsfeedproject.entity.Friend;
 import com.sparta.iinewsfeedproject.entity.User;
 import com.sparta.iinewsfeedproject.exception.FriendNotFoundException;
@@ -6,8 +8,8 @@ import com.sparta.iinewsfeedproject.exception.UserNotFoundException;
 import com.sparta.iinewsfeedproject.repository.FriendRepository;
 import com.sparta.iinewsfeedproject.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,8 +28,8 @@ public class FriendService {
     public void deleteFriend(Long fromUserId, Long userId) {
         if (!friendRepository.existsByFromUserIdAndToUserId(fromUserId, userId)) {
             throw new FriendNotFoundException("존재하지 않는 친구 관계입니다.");
-            // 이건없어서그렇고 파일
         }
+        friendRepository.deleteByFromUserIdAndToUserId(fromUserId, userId);
     }
 
     public FriendResponseDto createFriend(FriendRequestDto requestDto, User fromUser) {
