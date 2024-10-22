@@ -34,4 +34,13 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 
     List<Friend> findByStatus(String status);
 
+    // 상태값만 조회
+    String queryStatus = "SELECT status FROM friend WHERE id = :id";
+    @Query(value = queryStatus, nativeQuery = true)
+    String findAllByStatus(Long id);
+
+
+
+
+
 }
