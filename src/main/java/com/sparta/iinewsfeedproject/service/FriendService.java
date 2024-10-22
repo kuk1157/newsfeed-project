@@ -13,9 +13,9 @@ public class FriendService {
 
     @Transactional
     public void deleteFriend(Long fromUserId, Long userId) {
-        if (!friendRepository.existsByFromUserIdAndUserId(fromUserId, userId)) {
+        if (!friendRepository.existsByFromUserIdAndToUserId(fromUserId, userId)) {
             throw new FriendNotFoundException("존재하지 않는 친구 관계입니다.");
         }
-        friendRepository.deleteByFromUserIdAndUserId(fromUserId, userId);
+        friendRepository.deleteByFromUserIdAndToUserId(fromUserId, userId);
     }
 }
