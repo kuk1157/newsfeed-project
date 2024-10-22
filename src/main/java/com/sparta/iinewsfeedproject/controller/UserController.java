@@ -31,4 +31,11 @@ public class UserController {
                 .body(userService.login(reqDto, res));
     }
 
+    @GetMapping("/{userid}")
+    public ResponseEntity<UserResponseDto> showUser(@PathVariable Long userid) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userService.showUser(userid));
+    }
+
 }
