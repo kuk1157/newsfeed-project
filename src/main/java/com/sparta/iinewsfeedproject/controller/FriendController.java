@@ -1,14 +1,11 @@
 package com.sparta.iinewsfeedproject.controller;
 
-import com.sparta.iinewsfeedproject.dto.ErrorResponseDto;
-import com.sparta.iinewsfeedproject.exception.FriendNotFoundException;
 
 import com.sparta.iinewsfeedproject.dto.FriendRequestDto;
 import com.sparta.iinewsfeedproject.dto.FriendResponseDto;
 import com.sparta.iinewsfeedproject.entity.Friend;
 import com.sparta.iinewsfeedproject.entity.User;
 import com.sparta.iinewsfeedproject.service.FriendService;
-import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,9 +32,18 @@ public class FriendController {
         return ResponseEntity.status(HttpStatus.CREATED).body(friend);
     }
 
+    @GetMapping("")
+    public ResponseEntity<List<FriendResponseDto>> getFriends() {
+        List<FriendResponseDto> responseDto = friendService.getFriends();
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
     @ExceptionHandler(FriendNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleFriendNotFoundException(FriendNotFoundException ex) {
         ErrorResponseDto errorResponse = new ErrorResponseDto(404, ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+
+
+
 }

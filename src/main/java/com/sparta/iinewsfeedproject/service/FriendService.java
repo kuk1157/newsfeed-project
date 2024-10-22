@@ -32,6 +32,11 @@ public class FriendService {
 
     public FriendResponseDto createFriend(FriendRequestDto requestDto, User fromUser) {
         Long toUserId = requestDto.getToUserId();
+        Optional<User> fromUserId = userRepository.findById(toUserId);
+        if (fromUserId.isEmpty()) {
+            throw new UserNotFoundException("존재하지 않는 유저번호 입니다.");
+        }
+
         int count = friendRepository.findByToUserIdAndStatus(toUserId);
         int allCount = friendRepository.findAllById();
         if(count != 0 && allCount != 0){
@@ -58,5 +63,8 @@ public class FriendService {
                 .collect(Collectors.toList());
     }
 
-
+    public List<FriendResponseDto> getFriends() {
+        String status = "PENDING"; // 대기중 상태값의 친구요청만 조회
+        return friendRepository.findByStatus(status).stream().map(FriendResponseDto::new).toList();
+    }
 }

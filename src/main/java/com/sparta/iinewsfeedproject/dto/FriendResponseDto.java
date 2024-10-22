@@ -8,17 +8,14 @@ import java.time.LocalDateTime;
 @Getter
 public class FriendResponseDto {
     private Long id;
-    private Long toUserId;
     private String status;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private UserResponseDto fromUser;
 
     public FriendResponseDto(Friend friend) {
         this.id = friend.getId();
-        this.toUserId = friend.getToUserId();
+        // 추후 로그인과 함께 확인
+        // this.fromUser = new UserResponseDto(friend.getFromUser());
         this.status = friend.getStatus();
-        this.createdAt = friend.getCreatedAt();
-        this.updatedAt = friend.getUpdatedAt();
     }
 
 }
