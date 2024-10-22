@@ -1,6 +1,8 @@
 package com.sparta.iinewsfeedproject.service;
 
 import com.sparta.iinewsfeedproject.dto.FriendDto;
+import com.sparta.iinewsfeedproject.dto.FriendRequestDto;
+import com.sparta.iinewsfeedproject.dto.FriendResponseDto;
 import com.sparta.iinewsfeedproject.entity.Friend;
 import com.sparta.iinewsfeedproject.entity.User;
 import com.sparta.iinewsfeedproject.exception.FriendNotFoundException;
@@ -32,6 +34,20 @@ public class FriendService {
         friendRepository.deleteByFromUserIdAndToUserId(fromUserId, userId);
     }
 
+    public List<FriendDto> getAcceptedFriends(Long userId) {
+        Optional<User> fromUser = userRepository.findById(userId);
+        if (fromUser.isEmpty()) {
+            throw new UserNotFoundException("존재하지 않는 유저번호 입니다.");
+        }
+        List<Friend> friends = friendRepository.findByFromUserIdAndStatus(userId, "ACCEPT");
+        return friends.stream()
+                .map(friend -> {
+                    Optional<User> toUser = userRepository.findById(friend.getToUserId());
+                    return new FriendDto(friend.getToUserId(), toUser.get().getName(), toUser.get().getEmail());
+                })
+                .collect(Collectors.toList());
+    }
+
     public FriendResponseDto createFriend(FriendRequestDto requestDto, User fromUser) {
         Long toUserId = requestDto.getToUserId();
         Optional<User> fromUserId = userRepository.findById(toUserId);
@@ -49,20 +65,6 @@ public class FriendService {
         Friend saveFriends = friendRepository.save(friend);
         FriendResponseDto friendResponseDto = new FriendResponseDto(saveFriends);
         return friendResponseDto;
-    }
-
-    public List<FriendDto> getAcceptedFriends(Long userId) {
-        Optional<User> fromUser = userRepository.findById(userId);
-        if (fromUser.isEmpty()) {
-            throw new UserNotFoundException("존재하지 않는 유저번호 입니다.");
-        }
-        List<Friend> friends = friendRepository.findByFromUserIdAndStatus(userId, "ACCEPT");
-        return friends.stream()
-                .map(friend -> {
-                    Optional<User> toUser = userRepository.findById(friend.getToUserId());
-                    return new FriendDto(friend.getToUserId(), toUser.get().getName(), toUser.get().getEmail());
-                })
-                .collect(Collectors.toList());
     }
 
     public List<FriendResponseDto> getFriends() {
