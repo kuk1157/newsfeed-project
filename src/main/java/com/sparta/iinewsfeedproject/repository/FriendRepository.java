@@ -18,6 +18,12 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
     // 특정 사용자의 친구 목록 중 수락된 친구만 조회
     List<Friend> findByFromUserIdAndStatus(Long fromUserId, String status);
 
+    // 요청받은 유저가 fromUserId에 존재할 경우 삭제
+    void deleteByFromUserId(Long fromUserId);
+
+    // 요청받은 유저가 toUserId에 존재할 경우 삭제
+    void deleteByToUserId(Long toUserId);
+
     String query = "SELECT COUNT(*) FROM friend WHERE to_user_id = :toUserId AND status != 'REJECT' ";
     @Query(value = query, nativeQuery = true)
     int findByToUserIdAndStatus(Long toUserId);
@@ -27,8 +33,5 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
     int findAllById();
 
     List<Friend> findByStatus(String status);
-
-
-
 
 }
