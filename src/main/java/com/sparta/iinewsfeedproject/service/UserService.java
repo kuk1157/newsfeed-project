@@ -7,6 +7,7 @@ import com.sparta.iinewsfeedproject.dto.UserResponseDto;
 import com.sparta.iinewsfeedproject.entity.User;
 import com.sparta.iinewsfeedproject.jwt.JwtUtil;
 import com.sparta.iinewsfeedproject.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -66,4 +67,12 @@ public class UserService {
         return new UserResponseDto(user);
     }
 
+    @Transactional
+    public UserResponseDto updateName(String name, HttpServletRequest req) {
+        User user = (User) req.getAttribute("user");
+
+        user.setName(name);
+
+        return new UserResponseDto(user);
+    }
 }
