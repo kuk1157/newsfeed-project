@@ -1,12 +1,17 @@
 package com.sparta.iinewsfeedproject.controller;
 
 import com.sparta.iinewsfeedproject.dto.ErrorResponseDto;
+import com.sparta.iinewsfeedproject.dto.FriendDto;
 import com.sparta.iinewsfeedproject.exception.FriendNotFoundException;
 import com.sparta.iinewsfeedproject.service.FriendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/friends")
