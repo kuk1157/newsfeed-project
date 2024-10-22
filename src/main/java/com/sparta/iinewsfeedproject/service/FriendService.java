@@ -60,7 +60,6 @@ public class FriendService {
         if(count != 0 && allCount != 0){
             throw new IllegalArgumentException("친구 요청을 이미 보낸 회원입니다.");
         }
-        friendRepository.deleteByFromUserIdAndToUserId(fromUserId, userId);
         Friend friend = new Friend(requestDto.getToUserId(), requestDto.getStatus(), fromUser);
         Friend saveFriends = friendRepository.save(friend);
         FriendResponseDto friendResponseDto = new FriendResponseDto(saveFriends);
@@ -71,4 +70,29 @@ public class FriendService {
         String status = "PENDING"; // 대기중 상태값의 친구요청만 조회
         return friendRepository.findByStatus(status).stream().map(FriendResponseDto::new).toList();
     }
+
+    @Transactional
+    public Long updateFriend(Long friendId, FriendRequestDto requestDto) {
+        Friend friend = findFriend(friendId);
+        String status = requestDto.getStatus();
+
+        if(status.equals("ACCEPT") || status.equals("REJECT")){
+            String statusCheck = friendRepository.findAllByStatus(friendId);
+            if(statusCheck.equals("PENDING")){
+                friend.update(requestDto);
+            }else{
+                throw new IllegalArgumentException("대기 값만 응답할 수 있습니다.");
+            }
+        }else{
+            throw new IllegalArgumentException("유효하지 않은 상태값입니다. 다시 입력바랍니다.");
+        }
+        return friendId;
+    }
+
+    private Friend findFriend(Long friendId) {
+        return friendRepository.findById(friendId).orElseThrow(() ->
+                new IllegalArgumentException("비정상적인 접근입니다.")
+        );
+    }
+
 }

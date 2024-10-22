@@ -1,5 +1,6 @@
 package com.sparta.iinewsfeedproject.entity;
 
+import com.sparta.iinewsfeedproject.dto.FriendRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,6 +37,11 @@ public class Friend extends Timestamped  {
         this.toUserId = toUserId;
         this.status = status;
         this.fromUser = fromUser;
+    }
+
+    public void update(FriendRequestDto requestDto) {
+        // this.fromUser = requestDto.getFromUserId(); 추후 로그인시 수정 및 활용
+        this.status = requestDto.getStatus();
     }
 
 }
