@@ -2,6 +2,7 @@ package com.sparta.iinewsfeedproject.service;
 
 import com.sparta.iinewsfeedproject.config.PasswordEncoder;
 import com.sparta.iinewsfeedproject.dto.LoginRequestDto;
+import com.sparta.iinewsfeedproject.dto.PasswordRequestDto;
 import com.sparta.iinewsfeedproject.dto.SignupRequestDto;
 import com.sparta.iinewsfeedproject.dto.UserResponseDto;
 import com.sparta.iinewsfeedproject.entity.User;
@@ -10,6 +11,7 @@ import com.sparta.iinewsfeedproject.exception.UserNotFoundException;
 import com.sparta.iinewsfeedproject.jwt.JwtUtil;
 import com.sparta.iinewsfeedproject.repository.FriendRepository;
 import com.sparta.iinewsfeedproject.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -47,22 +49,57 @@ public class UserService {
         return new UserResponseDto(user);
     }
 
-    public UserResponseDto login(LoginRequestDto reqDto, HttpServletResponse res){
+    public UserResponseDto login(LoginRequestDto reqDto, HttpServletResponse res) {
 
         User user = (User) userRepository.findByEmail(reqDto.getEmail()).orElseThrow(() ->
                 new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다")
         );
 
-        if(!passwordEncoder.matches(reqDto.getPassword(), user.getPassword())){
+        if (!passwordEncoder.matches(reqDto.getPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 일치하지 않습니다");
         }
 
-        if(user.getDeletedAt() != null){
+        if (user.getDeletedAt() != null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 유저는 찾을 수 없습니다");
         }
 
         String token = jwtUtil.createToken(reqDto.getEmail());
         jwtUtil.addJwtToCookie(token, res);
+
+        return new UserResponseDto(user);
+    }
+
+    public UserResponseDto showUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new NullPointerException("해당 유저는 찾을 수 없습니다")
+        );
+
+        return new UserResponseDto(user);
+    }
+
+    @Transactional
+    public UserResponseDto updateName(String name, HttpServletRequest req) {
+        User user = (User) req.getAttribute("user");
+
+        user.setName(name);
+
+        return new UserResponseDto(user);
+    }
+
+    @Transactional
+    public Object updatePassword(PasswordRequestDto passwordDto, HttpServletRequest httpReq) {
+        User user = (User) httpReq.getSession().getAttribute("user");
+
+        if (passwordDto.getNewPassword().equals(passwordDto.getPastPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "기존 비밀번호와 같은 비밀번호로 수정할 수 없습니다");
+        }
+
+        if (!passwordEncoder.matches(passwordDto.getPastPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다");
+        }
+
+        String password = passwordEncoder.encode(passwordDto.getNewPassword());
+        user.savePassword(password);
 
         return new UserResponseDto(user);
     }
@@ -90,20 +127,7 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
-    public UserResponseDto showUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()->
-                new NullPointerException("해당 유저는 찾을 수 없습니다")
-        );
 
-        return new UserResponseDto(user);
-    }
 
-    @Transactional
-    public UserResponseDto updateName(String name, HttpServletRequest req) {
-        User user = (User) req.getAttribute("user");
 
-        user.setName(name);
-
-        return new UserResponseDto(user);
-    }
 }

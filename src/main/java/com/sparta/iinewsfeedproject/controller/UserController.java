@@ -1,10 +1,13 @@
 package com.sparta.iinewsfeedproject.controller;
 
 import com.sparta.iinewsfeedproject.dto.*;
+import com.sparta.iinewsfeedproject.dto.PasswordRequestDto;
 import com.sparta.iinewsfeedproject.exception.IncorrectPasswordException;
 import com.sparta.iinewsfeedproject.exception.UserNotFoundException;
 import com.sparta.iinewsfeedproject.service.FriendService;
+import com.sparta.iinewsfeedproject.entity.User;
 import com.sparta.iinewsfeedproject.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +36,7 @@ public class UserController {
                 .body(userService.signUp(reqDto));
     }
 
-    @PutMapping("/name")
-    public ResponseEntity<UserResponseDto> updateName(@RequestBody String name, HttpServletRequest httpReq) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userService.updateName(name, httpReq));
-    }
+
 
     @PostMapping("/login")
     public ResponseEntity<UserResponseDto> loginUser(@RequestBody LoginRequestDto reqDto, HttpServletResponse res) {
@@ -52,6 +50,20 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userService.showUser(userid));
+    }
+
+    @PutMapping("/name")
+    public ResponseEntity<UserResponseDto> updateName(@RequestBody String name, HttpServletRequest httpReq) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userService.updateName(name, httpReq));
+    }
+
+    @PutMapping("/password")
+    public ResponseEntity<UserResponseDto> updatePassword(@RequestBody PasswordRequestDto passwordDto, HttpServletRequest HttpReq) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body((UserResponseDto) userService.updatePassword(passwordDto, HttpReq));
     }
 
     @GetMapping("/{userId}/friends")
@@ -79,4 +91,6 @@ public class UserController {
         ErrorResponseDto errorResponse = new ErrorResponseDto(400, ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+
 }
