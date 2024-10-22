@@ -29,18 +29,19 @@ public class FriendController {
 
     @PostMapping("")
     public ResponseEntity<FriendResponseDto> createFriend(@RequestBody FriendRequestDto requestDto, HttpServletRequest request) {
-        User fromUser = (User)request.getAttribute("fromUser");
+        User fromUser = getUser(request);
         FriendResponseDto friend = friendService.createFriend(requestDto,fromUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(friend);
     }
 
     @GetMapping("")
-    public ResponseEntity<List<FriendResponseDto>> getFriends() {
+    public ResponseEntity<List<FriendResponseDto>> getFriends(HttpServletRequest request) {
+//        User ToUser = getUser(request); - 로그인한 본인의 요청목록만 추후 넣을예정
         List<FriendResponseDto> responseDto = friendService.getFriends();
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
-    @PutMapping("/friends/{friendId}")
+    @PutMapping("/{friendId}")
     public Long updateFriend(@PathVariable Long friendId, @RequestBody FriendRequestDto requestDto) {
         return friendService.updateFriend(friendId,requestDto);
     }
@@ -55,5 +56,9 @@ public class FriendController {
     public ResponseEntity<ErrorResponseDto> handleFriendNotFoundException(FriendNotFoundException ex) {
         ErrorResponseDto errorResponse = new ErrorResponseDto(404, ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    public User getUser(HttpServletRequest request) {
+        return (User)request.getAttribute("user");
     }
 }

@@ -39,9 +39,8 @@ public class Friend extends Timestamped  {
         this.fromUser = fromUser;
     }
 
-    public void update(FriendRequestDto requestDto) {
-        // this.fromUser = requestDto.getFromUserId(); 추후 로그인시 수정 및 활용
-        this.status = requestDto.getStatus();
+    public void update(String status ) {
+        this.status = status;
     }
 
 }

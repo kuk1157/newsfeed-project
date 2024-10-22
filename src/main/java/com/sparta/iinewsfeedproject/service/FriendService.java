@@ -49,12 +49,12 @@ public class FriendService {
     }
 
     public FriendResponseDto createFriend(FriendRequestDto requestDto, User fromUser) {
+        // 중복 체크 추가해야함 내일 넣을예정
         Long toUserId = requestDto.getToUserId();
         Optional<User> fromUserId = userRepository.findById(toUserId);
         if (fromUserId.isEmpty()) {
             throw new UserNotFoundException("존재하지 않는 유저번호 입니다.");
         }
-
         int count = friendRepository.findByToUserIdAndStatus(toUserId);
         int allCount = friendRepository.findAllById();
         if(count != 0 && allCount != 0){
@@ -79,7 +79,7 @@ public class FriendService {
         if(status.equals("ACCEPT") || status.equals("REJECT")){
             String statusCheck = friendRepository.findAllByStatus(friendId);
             if(statusCheck.equals("PENDING")){
-                friend.update(requestDto);
+                friend.update(status);
             }else{
                 throw new IllegalArgumentException("대기 값만 응답할 수 있습니다.");
             }
@@ -88,6 +88,7 @@ public class FriendService {
         }
         return friendId;
     }
+
 
     private Friend findFriend(Long friendId) {
         return friendRepository.findById(friendId).orElseThrow(() ->
