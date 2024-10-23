@@ -1,14 +1,20 @@
 package com.sparta.iinewsfeedproject.controller;
 
 import com.sparta.iinewsfeedproject.dto.*;
+import com.sparta.iinewsfeedproject.dto.PasswordRequestDto;
 import com.sparta.iinewsfeedproject.exception.IncorrectPasswordException;
 import com.sparta.iinewsfeedproject.exception.UserNotFoundException;
+import com.sparta.iinewsfeedproject.service.FriendService;
+import com.sparta.iinewsfeedproject.entity.User;
 import com.sparta.iinewsfeedproject.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -96,4 +102,6 @@ public class UserController {
         ErrorResponseDto errorResponse = new ErrorResponseDto(400, ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+
 }
