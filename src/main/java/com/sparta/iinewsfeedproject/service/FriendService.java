@@ -34,6 +34,7 @@ public class FriendService {
         friendRepository.deleteByFromUserIdAndToUserId(fromUserId, userId);
     }
 
+
     public List<FriendDto> getAcceptedFriends(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
@@ -98,5 +99,4 @@ public class FriendService {
                 new IllegalArgumentException("비정상적인 접근입니다.")
         );
     }
-
 }

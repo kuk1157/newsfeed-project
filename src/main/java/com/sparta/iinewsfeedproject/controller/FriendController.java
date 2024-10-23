@@ -1,17 +1,15 @@
 package com.sparta.iinewsfeedproject.controller;
 
 
+import com.sparta.iinewsfeedproject.dto.ErrorResponseDto;
 import com.sparta.iinewsfeedproject.dto.FriendRequestDto;
 import com.sparta.iinewsfeedproject.dto.FriendResponseDto;
-import com.sparta.iinewsfeedproject.entity.Friend;
-import com.sparta.iinewsfeedproject.dto.ErrorResponseDto;
 import com.sparta.iinewsfeedproject.entity.User;
 import com.sparta.iinewsfeedproject.exception.FriendNotFoundException;
 import com.sparta.iinewsfeedproject.service.FriendService;
 import jakarta.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
