@@ -1,14 +1,15 @@
 package com.sparta.iinewsfeedproject.service;
 
 import com.sparta.iinewsfeedproject.config.PasswordEncoder;
-import com.sparta.iinewsfeedproject.dto.*;
+import com.sparta.iinewsfeedproject.dto.LoginRequestDto;
+import com.sparta.iinewsfeedproject.dto.SignupRequestDto;
+import com.sparta.iinewsfeedproject.dto.UserResponseDto;
 import com.sparta.iinewsfeedproject.entity.User;
 import com.sparta.iinewsfeedproject.exception.IncorrectPasswordException;
 import com.sparta.iinewsfeedproject.exception.UserNotFoundException;
 import com.sparta.iinewsfeedproject.jwt.JwtUtil;
 import com.sparta.iinewsfeedproject.repository.FriendRepository;
 import com.sparta.iinewsfeedproject.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -111,7 +112,7 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(Long userId, String password) {
+    public void deactivateUser(Long userId, String password) {
         Optional<User> userOptional = userRepository.findById(userId);
 
         if (userOptional.isEmpty()) {
@@ -129,11 +130,8 @@ public class UserService {
         friendRepository.deleteByFromUserId(userId);
         friendRepository.deleteByToUserId(userId);
 
-        // 사용자 삭제
-        userRepository.deleteById(userId);
+        // 사용자 비활성화 처리
+        user.deactivate();
+        userRepository.save(user);
     }
-
-
-
-
 }

@@ -50,4 +50,8 @@ public class User extends Timestamped  {
     public void savePassword(String password) {
         this.password = password;
     }
+
+    public void deactivate() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }

@@ -1,6 +1,5 @@
 package com.sparta.iinewsfeedproject.entity;
 
-import com.sparta.iinewsfeedproject.dto.FriendRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

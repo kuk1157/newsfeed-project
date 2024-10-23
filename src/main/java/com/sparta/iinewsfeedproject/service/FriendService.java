@@ -34,19 +34,17 @@ public class FriendService {
         friendRepository.deleteByFromUserIdAndToUserId(fromUserId, userId);
     }
 
+
     public List<FriendDto> getAcceptedFriends(Long userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
+        Optional<User> fromUser = userRepository.findById(userId);
+        if (fromUser.isEmpty()) {
             throw new UserNotFoundException("존재하지 않는 유저번호 입니다.");
         }
-
-        List<Friend> friends = friendRepository.findByFromUserIdAndStatusOrToUserIdAndStatus(userId, "ACCEPT", userId, "ACCEPT");
+        List<Friend> friends = friendRepository.findByFromUserIdAndStatus(userId, "ACCEPT");
         return friends.stream()
                 .map(friend -> {
-                    Long otherUserId = friend.getFromUser().getId().equals(userId) ? friend.getToUserId() : friend.getFromUser().getId();
-                    User otherUser = userRepository.findById(otherUserId)
-                            .orElseThrow(() -> new UserNotFoundException("존재하지 않는 유저번호 입니다: " + otherUserId));
-                    return new FriendDto(otherUserId, otherUser.getName(), otherUser.getEmail());
+                    Optional<User> toUser = userRepository.findById(friend.getToUserId());
+                    return new FriendDto(friend.getToUserId(), toUser.get().getName(), toUser.get().getEmail());
                 })
                 .collect(Collectors.toList());
     }
@@ -98,5 +96,4 @@ public class FriendService {
                 new IllegalArgumentException("비정상적인 접근입니다.")
         );
     }
-
 }

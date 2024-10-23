@@ -90,6 +90,11 @@ public class UserController {
         userService.deleteUser(userId, deleteUserRequest.getPassword());
         return ResponseEntity.noContent().build();
     }
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deactivateUser(@PathVariable Long userId, @RequestBody DeleteUserRequestDto deleteUserRequest) {
+        userService.deactivateUser(userId, deleteUserRequest.getPassword());
+        return ResponseEntity.noContent().build();
+    }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleUserNotFoundException(UserNotFoundException ex) {
@@ -102,6 +107,4 @@ public class UserController {
         ErrorResponseDto errorResponse = new ErrorResponseDto(400, ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
-
-
 }
