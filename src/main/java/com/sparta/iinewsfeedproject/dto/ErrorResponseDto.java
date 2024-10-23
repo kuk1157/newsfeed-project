@@ -1,8 +1,9 @@
 package com.sparta.iinewsfeedproject.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 
+@Getter
 @AllArgsConstructor
 public class ErrorResponseDto {
     private int code;
