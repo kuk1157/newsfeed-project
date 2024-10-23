@@ -9,6 +9,7 @@ import com.sparta.iinewsfeedproject.exception.IncorrectPasswordException;
 import com.sparta.iinewsfeedproject.exception.UserNotFoundException;
 import com.sparta.iinewsfeedproject.jwt.JwtUtil;
 import com.sparta.iinewsfeedproject.repository.FriendRepository;
+import com.sparta.iinewsfeedproject.repository.PostRepository;
 import com.sparta.iinewsfeedproject.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,13 +25,15 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
-    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
     @Autowired
+    private final UserRepository userRepository;
+    @Autowired
     private FriendRepository friendRepository;
+    @Autowired
+    private PostRepository postRepository;
 
     public UserResponseDto signUp(SignupRequestDto reqDto){
         userRepository.findByEmail(reqDto.getEmail())
@@ -121,16 +124,15 @@ public class UserService {
 
         User user = userOptional.get();
 
-        // 비밀번호 검증
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IncorrectPasswordException("비밀번호가 일치하지 않습니다.");
         }
 
-        // 연관된 친구 관계 삭제
         friendRepository.deleteByFromUserId(userId);
         friendRepository.deleteByToUserId(userId);
 
-        // 사용자 비활성화 처리
+        postRepository.deleteByUserId(userId);
+
         user.deactivate();
         userRepository.save(user);
     }
