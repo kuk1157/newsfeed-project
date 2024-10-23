@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -27,11 +28,15 @@ public class FriendService {
     private UserRepository userRepository;
 
     @Transactional
-    public void deleteFriend(Long fromUserId, Long userId) {
-        if (!friendRepository.existsByFromUserIdAndToUserId(fromUserId, userId)) {
-            throw new CustomException(ErrorCode.NOT_FOUND_FRIEND);
+    public void deleteFriend(Long friendId, Long userId) {
+        Friend friend = friendRepository.findById(friendId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_FRIEND));
+
+        if (!friend.getFromUser().getId().equals(userId) && !friend.getToUserId().equals(userId)) {
+            throw new SecurityException("삭제 권한이 없습니다.");
         }
-        friendRepository.deleteByFromUserIdAndToUserId(fromUserId, userId);
+
+        friendRepository.delete(friend);
     }
 
 
@@ -56,6 +61,10 @@ public class FriendService {
         // 요청 보낼때 - 로그인 id == from_user_id
         Long toUserId = requestDto.getToUserId();
 
+        if (Objects.equals(toUserId, fromUser.getId())) {
+            throw new IllegalArgumentException("자기자신에게 친구 요청을 보낼 수 없습니다.");
+        }
+
         Optional<User> fromUserId = userRepository.findById(toUserId);
         if (fromUserId.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_USER);
@@ -65,18 +74,17 @@ public class FriendService {
         int allCount = friendRepository.findAllById();
         int distinct = friendRepository.findByFromUserIdAndToUserId(fromUser.getId(), toUserId);
         // 내가 요청한 사람이 이미 나에게 친구요청한 경우
-        if(distinct != 0 && allCount != 0){
+        if (distinct != 0 && allCount != 0) {
             throw new CustomException(ErrorCode.DUPLICATE_FRIEND_REQUEST);
         }
         // 내가 이미 요청을 보냈을 경우 그리고 상태값이 대기와 승인일 경우
-        if(count != 0 && allCount != 0) {
+        if (count != 0 && allCount != 0) {
             throw new CustomException(ErrorCode.DUPLICATE_FRIEND_REQUEST);
         }
 
         Friend friend = new Friend(requestDto.getToUserId(), requestDto.getStatus(), fromUser);
         Friend saveFriends = friendRepository.save(friend);
-        FriendResponseDto friendResponseDto = new FriendResponseDto(saveFriends);
-        return friendResponseDto;
+        return new FriendResponseDto(saveFriends);
     }
 
     public List<FriendResponseDto> getFriends(User toUser) {
@@ -89,20 +97,22 @@ public class FriendService {
     public Long updateFriend(Long friendId, FriendRequestDto requestDto, User toUser) {
 
         Friend friend = findFriend(friendId);
-        String status = requestDto.getStatus();
+
         // 요청 응답시 - 로그인 id == to_user_id
-        int checkId = friendRepository.findByToUserIdAndStatusAndId(toUser.getId(), status, friendId);
-        if(checkId == 0){
+        int checkId = friendRepository.findByToUserIdAndStatusAndId(toUser.getId(), "PENDING", friendId);
+        if (checkId == 0) {
             throw new CustomException(ErrorCode.NOT_MY_RESPONSE);
         }
-        if(status.equals("ACCEPT") || status.equals("REJECT")){
+
+        String status = requestDto.getStatus();
+        if (status.equals("ACCEPT") || status.equals("REJECT")) {
             String statusCheck = friendRepository.findAllByStatus(friendId);
-            if(statusCheck.equals("PENDING")){
+            if (statusCheck.equals("PENDING")) {
                 friend.update(status);
-            }else{
+            } else {
                 throw new CustomException(ErrorCode.NOT_RESPONSE);
             }
-        }else{
+        } else {
             throw new CustomException(ErrorCode.NOT_VALID_STATUS);
         }
         return friendId;

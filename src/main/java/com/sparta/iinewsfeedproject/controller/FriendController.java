@@ -23,14 +23,14 @@ public class FriendController {
     @Autowired
     private FriendService friendService;
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<FriendResponseDto> createFriend(@RequestBody FriendRequestDto requestDto, HttpServletRequest request) {
         User fromUser = getUser(request);
-        FriendResponseDto friend = friendService.createFriend(requestDto,fromUser);
+        FriendResponseDto friend = friendService.createFriend(requestDto, fromUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(friend);
     }
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<FriendResponseDto>> getFriends(HttpServletRequest request) {
         User toUser = getUser(request);
         List<FriendResponseDto> responseDto = friendService.getFriends(toUser);
@@ -43,13 +43,15 @@ public class FriendController {
         return friendService.updateFriend(friendId,requestDto,toUser);
     }
 
-    @DeleteMapping ("/{fromUserId}/friend/{userId}")
-    public ResponseEntity<Void> deleteFriend(@PathVariable Long fromUserId, @PathVariable Long userId) {
-        friendService.deleteFriend(fromUserId, userId);
+    @DeleteMapping("/{friendId}")
+    public ResponseEntity<Void> deleteFriend(@PathVariable Long friendId, HttpServletRequest request) {
+        // JWT 토큰에서 추출한 사용자
+        User user = (User) request.getAttribute("user");
+        friendService.deleteFriend(friendId, user.getId());
         return ResponseEntity.ok().build();
     }
 
     public User getUser(HttpServletRequest request) {
-        return (User)request.getAttribute("user");
+        return (User) request.getAttribute("user");
     }
 }
