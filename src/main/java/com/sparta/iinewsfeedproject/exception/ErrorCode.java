@@ -20,6 +20,7 @@ public enum ErrorCode {
     NOT_MATCH_LOGIN(HttpStatus.BAD_REQUEST,"이메일 또는 비밀번호가 일치하지 않습니다."),
     NOT_TOKEN(HttpStatus.BAD_REQUEST,"재 로그인이 필요합니다."),
     NOT_WRITE_USER(HttpStatus.BAD_REQUEST,"본인의 게시물만 삭제 및 수정할 수 있습니다"),
+    NOT_MY_RESPONSE(HttpStatus.BAD_REQUEST,"본인이 받은 요청만 응답할 수 있습니다."),
     NOT_ACCESS(HttpStatus.FORBIDDEN,"비정상적인 접근입니다."),
     NOT_FOUND_POST(HttpStatus.NOT_FOUND,"존재하지 않는 게시물입니다."),
     NOT_FOUND_USER(HttpStatus.NOT_FOUND,"존재하지 않는 유저 입니다."),
