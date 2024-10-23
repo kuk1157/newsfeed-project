@@ -47,14 +47,14 @@ public class PostController {
     public ResponseEntity<Void> modifyPost(@PathVariable Long id, @RequestBody @Valid PostRequestDto postRequestDto, HttpServletRequest request) {
         User user = getUser(request);
         postService.modifyPost(id,postRequestDto,user);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id, HttpServletRequest request) {
         User user = getUser(request);
         postService.deletePost(id,user);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     public User getUser(HttpServletRequest request) {
