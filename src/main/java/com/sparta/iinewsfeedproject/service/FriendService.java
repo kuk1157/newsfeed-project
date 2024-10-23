@@ -93,7 +93,7 @@ public class FriendService {
         // 요청 응답시 - 로그인 id == to_user_id
         int checkId = friendRepository.findByToUserIdAndStatusAndId(toUser.getId(), status, friendId);
         if(checkId == 0){
-            throw new IllegalArgumentException("본인이 받은 요청만 응답할 수 있습니다.");
+            throw new CustomException(ErrorCode.NOT_MY_RESPONSE);
         }
         if(status.equals("ACCEPT") || status.equals("REJECT")){
             String statusCheck = friendRepository.findAllByStatus(friendId);
