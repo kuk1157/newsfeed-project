@@ -50,8 +50,4 @@ public class User extends Timestamped  {
     public void savePassword(String password) {
         this.password = password;
     }
-
-    public void setName(String newName) {
-        this.name = name;
-    }
 }
