@@ -1,11 +1,9 @@
 package com.sparta.iinewsfeedproject.controller;
 
 
-import com.sparta.iinewsfeedproject.dto.ErrorResponseDto;
 import com.sparta.iinewsfeedproject.dto.FriendRequestDto;
 import com.sparta.iinewsfeedproject.dto.FriendResponseDto;
 import com.sparta.iinewsfeedproject.entity.User;
-import com.sparta.iinewsfeedproject.exception.FriendNotFoundException;
 import com.sparta.iinewsfeedproject.service.FriendService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -49,12 +47,6 @@ public class FriendController {
     public ResponseEntity<Void> deleteFriend(@PathVariable Long fromUserId, @PathVariable Long userId) {
         friendService.deleteFriend(fromUserId, userId);
         return ResponseEntity.ok().build();
-    }
-
-    @ExceptionHandler(FriendNotFoundException.class)
-    public ResponseEntity<ErrorResponseDto> handleFriendNotFoundException(FriendNotFoundException ex) {
-        ErrorResponseDto errorResponse = new ErrorResponseDto(404, ex.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     public User getUser(HttpServletRequest request) {
