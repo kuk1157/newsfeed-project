@@ -33,7 +33,7 @@ public class FriendService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_FRIEND));
 
         if (!friend.getFromUser().getId().equals(userId) && !friend.getToUserId().equals(userId)) {
-            throw new SecurityException("삭제 권한이 없습니다.");
+            throw  new CustomException(ErrorCode.NOT_FORBIDDEN);
         }
 
         friendRepository.delete(friend);
@@ -62,7 +62,7 @@ public class FriendService {
         Long toUserId = requestDto.getToUserId();
 
         if (Objects.equals(toUserId, fromUser.getId())) {
-            throw new IllegalArgumentException("자기자신에게 친구 요청을 보낼 수 없습니다.");
+            throw new CustomException(ErrorCode.NOT_MY_FRIEND_REQUEST);
         }
 
         Optional<User> fromUserId = userRepository.findById(toUserId);
