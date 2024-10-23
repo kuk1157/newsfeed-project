@@ -3,6 +3,8 @@ package com.sparta.iinewsfeedproject.service;
 import com.sparta.iinewsfeedproject.config.PasswordEncoder;
 import com.sparta.iinewsfeedproject.dto.*;
 import com.sparta.iinewsfeedproject.entity.User;
+import com.sparta.iinewsfeedproject.exception.CustomException;
+import com.sparta.iinewsfeedproject.exception.ErrorCode;
 import com.sparta.iinewsfeedproject.exception.IncorrectPasswordException;
 import com.sparta.iinewsfeedproject.exception.UserNotFoundException;
 import com.sparta.iinewsfeedproject.jwt.JwtUtil;
@@ -36,7 +38,7 @@ public class UserService {
     public UserResponseDto signUp(SignupRequestDto reqDto){
         userRepository.findByEmail(reqDto.getEmail())
                 .ifPresent(user -> {
-                    throw new IllegalArgumentException("중복된 이메일 입니다");
+                    throw new CustomException(ErrorCode.DUPLICATION_EMAIL);
                 });
 
         String password = passwordEncoder.encode(reqDto.getPassword());
@@ -51,15 +53,15 @@ public class UserService {
     public UserResponseDto login(LoginRequestDto reqDto, HttpServletResponse res) {
 
         User user = (User) userRepository.findByEmail(reqDto.getEmail()).orElseThrow(() ->
-                new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다")
+                new CustomException(ErrorCode.NOT_MATCH_LOGIN)
         );
 
         if (!passwordEncoder.matches(reqDto.getPassword(), user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 일치하지 않습니다");
+            throw new CustomException(ErrorCode.NOT_MATCH_LOGIN);
         }
 
         if (user.getDeletedAt() != null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 유저는 찾을 수 없습니다");
+            throw new CustomException(ErrorCode.NOT_FOUND_USER);
         }
 
         String token = jwtUtil.createToken(reqDto.getEmail());
@@ -70,7 +72,7 @@ public class UserService {
 
     public UserResponseDto showUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
-                new NullPointerException("해당 유저는 찾을 수 없습니다")
+                new CustomException(ErrorCode.NOT_FOUND_USER)
         );
 
         return new UserResponseDto(user);
@@ -94,15 +96,15 @@ public class UserService {
 
         // null 체크 추가
         if (pastPassword == null || newPassword == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호를 모두 입력해야 합니다.");
+            throw new CustomException(ErrorCode.NULL_PASSWORD);
         }
 
         if (pastPassword.equals(newPassword)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "기존 비밀번호와 같은 비밀번호로 수정할 수 없습니다.");
+            throw new CustomException(ErrorCode.DUPLICATION_MODIFY_PASSWORD);
         }
 
         if (!passwordEncoder.matches(pastPassword, user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.NOT_MATCH_PASSWORD);
         }
 
         String password = passwordEncoder.encode(newPassword);
@@ -117,13 +119,13 @@ public class UserService {
         Optional<User> userOptional = userRepository.findById(userId);
 
         if (userOptional.isEmpty()) {
-            throw new UserNotFoundException("존재하지 않는 유저번호 입니다.");
+            throw new CustomException(ErrorCode.NOT_FOUND_USER);
         }
 
         User user = userOptional.get();
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IncorrectPasswordException("비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.NOT_MATCH_PASSWORD);
         }
 
         friendRepository.deleteByFromUserId(userId);
