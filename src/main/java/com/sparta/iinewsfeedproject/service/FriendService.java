@@ -49,33 +49,48 @@ public class FriendService {
     }
 
     public FriendResponseDto createFriend(FriendRequestDto requestDto, User fromUser) {
-        // 중복 체크 추가해야함 내일 넣을예정
+        // 요청 보낼때 - 로그인 id == from_user_id
         Long toUserId = requestDto.getToUserId();
+
         Optional<User> fromUserId = userRepository.findById(toUserId);
         if (fromUserId.isEmpty()) {
             throw new UserNotFoundException("존재하지 않는 유저번호 입니다.");
         }
-        int count = friendRepository.findByToUserIdAndStatus(toUserId);
+
+        int count = friendRepository.findByToUserIdAndStatus(toUserId, fromUser.getId());
         int allCount = friendRepository.findAllById();
-        if(count != 0 && allCount != 0){
+        int distinct = friendRepository.findByFromUserIdAndToUserId(fromUser.getId(), toUserId);
+        // 내가 요청한 사람이 이미 나에게 친구요청한 경우
+        if(distinct != 0 && allCount != 0){
             throw new IllegalArgumentException("친구 요청을 이미 보낸 회원입니다.");
         }
+        // 내가 이미 요청을 보냈을 경우 그리고 상태값이 대기와 승인일 경우
+        if(count != 0 && allCount != 0) {
+            throw new IllegalArgumentException("친구 요청을 이미 보낸 회원입니다.");
+        }
+
         Friend friend = new Friend(requestDto.getToUserId(), requestDto.getStatus(), fromUser);
         Friend saveFriends = friendRepository.save(friend);
         FriendResponseDto friendResponseDto = new FriendResponseDto(saveFriends);
         return friendResponseDto;
     }
 
-    public List<FriendResponseDto> getFriends() {
+    public List<FriendResponseDto> getFriends(User toUser) {
+        // 요청 조회시 - 로그인 id == to_user_id
         String status = "PENDING"; // 대기중 상태값의 친구요청만 조회
-        return friendRepository.findByStatus(status).stream().map(FriendResponseDto::new).toList();
+        return friendRepository.findByToUserIdOrFromUserIdAndStatus(toUser.getId(), toUser.getId(), status).stream().map(FriendResponseDto::new).toList();
     }
 
     @Transactional
-    public Long updateFriend(Long friendId, FriendRequestDto requestDto) {
+    public Long updateFriend(Long friendId, FriendRequestDto requestDto, User toUser) {
+
         Friend friend = findFriend(friendId);
         String status = requestDto.getStatus();
-
+        // 요청 응답시 - 로그인 id == to_user_id
+        int checkId = friendRepository.findByToUserIdAndStatusAndId(toUser.getId(), status, friendId);
+        if(checkId == 0){
+            throw new IllegalArgumentException("본인이 받은 요청만 응답할 수 있습니다.");
+        }
         if(status.equals("ACCEPT") || status.equals("REJECT")){
             String statusCheck = friendRepository.findAllByStatus(friendId);
             if(statusCheck.equals("PENDING")){
@@ -88,7 +103,6 @@ public class FriendService {
         }
         return friendId;
     }
-
 
     private Friend findFriend(Long friendId) {
         return friendRepository.findById(friendId).orElseThrow(() ->

@@ -36,14 +36,15 @@ public class FriendController {
 
     @GetMapping("")
     public ResponseEntity<List<FriendResponseDto>> getFriends(HttpServletRequest request) {
-//        User ToUser = getUser(request); - 로그인한 본인의 요청목록만 추후 넣을예정
-        List<FriendResponseDto> responseDto = friendService.getFriends();
+        User toUser = getUser(request);
+        List<FriendResponseDto> responseDto = friendService.getFriends(toUser);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     @PutMapping("/{friendId}")
-    public Long updateFriend(@PathVariable Long friendId, @RequestBody FriendRequestDto requestDto) {
-        return friendService.updateFriend(friendId,requestDto);
+    public Long updateFriend(@PathVariable Long friendId, @RequestBody FriendRequestDto requestDto, HttpServletRequest request) {
+        User toUser = getUser(request);
+        return friendService.updateFriend(friendId,requestDto,toUser);
     }
 
     @DeleteMapping ("/{fromUserId}/friend/{userId}")
