@@ -5,6 +5,8 @@ import com.sparta.iinewsfeedproject.dto.PostRequestDto;
 import com.sparta.iinewsfeedproject.dto.PostResponseDto;
 import com.sparta.iinewsfeedproject.entity.Post;
 import com.sparta.iinewsfeedproject.entity.User;
+import com.sparta.iinewsfeedproject.exception.CustomException;
+import com.sparta.iinewsfeedproject.exception.ErrorCode;
 import com.sparta.iinewsfeedproject.repository.PostRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -40,13 +42,13 @@ public class PostService {
     @Transactional
     public void modifyPost(Long id,@Valid PostRequestDto postRequestDto, User user) {
         Post post = postRepository.findOnePost(id);
-        if(!post.getUser().getId().equals(user.getId())) throw new IllegalArgumentException("본인이 작성한 글만 수정 및 삭제할 수 있습니다.");
+        if(!post.getUser().getId().equals(user.getId())) throw new CustomException(ErrorCode.NOT_WRITE_USER);
         post.modifyContent(postRequestDto.getContent());
     }
 
     public void deletePost(Long id, User user) {
         Post post = postRepository.findOnePost(id);
-        if(!post.getUser().getId().equals(user.getId())) throw new IllegalArgumentException("본인이 작성한 글만 수정 및 삭제할 수 있습니다.");
+        if(!post.getUser().getId().equals(user.getId())) throw new CustomException(ErrorCode.NOT_WRITE_USER);
         postRepository.delete(post);
     }
 }
