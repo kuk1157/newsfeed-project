@@ -9,10 +9,12 @@ import com.sparta.iinewsfeedproject.entity.User;
 import com.sparta.iinewsfeedproject.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -27,16 +29,24 @@ public class UserController {
 
     private final UserService userService;
     @Autowired
-    private FriendService friendService;
+    private final FriendService friendService;
 
     @PostMapping
-    public ResponseEntity<UserResponseDto> registerUser(@RequestBody SignupRequestDto reqDto) {
-        return  ResponseEntity
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequestDto reqDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
+            ErrorResponseDto errorResponse = new ErrorResponseDto(
+                    HttpStatus.BAD_REQUEST.value(),
+                    errorMessage
+            );
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(errorResponse);
+        }
+        return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(userService.signUp(reqDto));
     }
-
-
 
     @PostMapping("/login")
     public ResponseEntity<UserResponseDto> loginUser(@RequestBody LoginRequestDto reqDto, HttpServletResponse res) {
@@ -53,17 +63,18 @@ public class UserController {
     }
 
     @PutMapping("/name")
-    public ResponseEntity<UserResponseDto> updateName(@RequestBody String name, HttpServletRequest httpReq) {
+    public ResponseEntity<UserUpdateResponseDto> updateName(@RequestBody Map<String, String> request, HttpServletRequest httpReq) {
+        String name = request.get("name");
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userService.updateName(name, httpReq));
     }
 
     @PutMapping("/password")
-    public ResponseEntity<UserResponseDto> updatePassword(@RequestBody PasswordRequestDto passwordDto, HttpServletRequest HttpReq) {
+    public ResponseEntity<UserUpdateResponseDto> updatePassword(@RequestBody PasswordRequestDto passwordDto, HttpServletRequest HttpReq) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body((UserResponseDto) userService.updatePassword(passwordDto, HttpReq));
+                .body((UserUpdateResponseDto) userService.updatePassword(passwordDto, HttpReq));
     }
 
     @GetMapping("/{userId}/friends")

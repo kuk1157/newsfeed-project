@@ -1,6 +1,8 @@
 package com.sparta.iinewsfeedproject.service;
 
 import com.sparta.iinewsfeedproject.dto.FriendDto;
+import com.sparta.iinewsfeedproject.dto.FriendRequestDto;
+import com.sparta.iinewsfeedproject.dto.FriendResponseDto;
 import com.sparta.iinewsfeedproject.entity.Friend;
 import com.sparta.iinewsfeedproject.entity.User;
 import com.sparta.iinewsfeedproject.exception.FriendNotFoundException;

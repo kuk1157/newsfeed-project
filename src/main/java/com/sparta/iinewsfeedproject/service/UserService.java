@@ -1,10 +1,7 @@
 package com.sparta.iinewsfeedproject.service;
 
 import com.sparta.iinewsfeedproject.config.PasswordEncoder;
-import com.sparta.iinewsfeedproject.dto.LoginRequestDto;
-import com.sparta.iinewsfeedproject.dto.PasswordRequestDto;
-import com.sparta.iinewsfeedproject.dto.SignupRequestDto;
-import com.sparta.iinewsfeedproject.dto.UserResponseDto;
+import com.sparta.iinewsfeedproject.dto.*;
 import com.sparta.iinewsfeedproject.entity.User;
 import com.sparta.iinewsfeedproject.exception.IncorrectPasswordException;
 import com.sparta.iinewsfeedproject.exception.UserNotFoundException;
@@ -78,30 +75,39 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDto updateName(String name, HttpServletRequest req) {
+    public UserUpdateResponseDto updateName(String name, HttpServletRequest req) {
         User user = (User) req.getAttribute("user");
-
         user.setName(name);
+        userRepository.save(user);
 
-        return new UserResponseDto(user);
+        return new UserUpdateResponseDto(user);
     }
 
     @Transactional
     public Object updatePassword(PasswordRequestDto passwordDto, HttpServletRequest httpReq) {
-        User user = (User) httpReq.getSession().getAttribute("user");
+        User user = (User) httpReq.getAttribute("user");
 
-        if (passwordDto.getNewPassword().equals(passwordDto.getPastPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "기존 비밀번호와 같은 비밀번호로 수정할 수 없습니다");
+        String pastPassword = passwordDto.getPastPassword();
+        String newPassword = passwordDto.getNewPassword();
+
+        // null 체크 추가
+        if (pastPassword == null || newPassword == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호를 모두 입력해야 합니다.");
         }
 
-        if (!passwordEncoder.matches(passwordDto.getPastPassword(), user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다");
+        if (pastPassword.equals(newPassword)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "기존 비밀번호와 같은 비밀번호로 수정할 수 없습니다.");
         }
 
-        String password = passwordEncoder.encode(passwordDto.getNewPassword());
+        if (!passwordEncoder.matches(pastPassword, user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        }
+
+        String password = passwordEncoder.encode(newPassword);
         user.savePassword(password);
+        userRepository.save(user);
 
-        return new UserResponseDto(user);
+        return new UserUpdateResponseDto(user);
     }
 
     @Transactional

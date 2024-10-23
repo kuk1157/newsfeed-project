@@ -12,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @Table(name="user")
 @NoArgsConstructor
 public class User extends Timestamped  {
@@ -24,7 +25,6 @@ public class User extends Timestamped  {
     @OneToMany(mappedBy = "user")
     private List<Post> post = new ArrayList<>();
 
-    @Setter
     @Column(name="name")
     @Comment(value = "이름")
     private String name;
