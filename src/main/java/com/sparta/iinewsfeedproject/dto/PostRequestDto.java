@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 public class PostRequestDto {
-    @NotBlank(message = "내용을 입력해주세요")
+    @NotBlank(message = "NULL_CONTENT")
     private String content;
 }

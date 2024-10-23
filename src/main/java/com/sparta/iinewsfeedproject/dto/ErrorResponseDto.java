@@ -1,11 +1,17 @@
 package com.sparta.iinewsfeedproject.dto;
 
-import lombok.AllArgsConstructor;
+import com.sparta.iinewsfeedproject.exception.ErrorCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 public class ErrorResponseDto {
     private int code;
     private String message;
+
+    public ErrorResponseDto(ErrorCode errorCode) {
+        this.code = errorCode.getStatus();
+        this.message = errorCode.getMessage();
+    }
 }
