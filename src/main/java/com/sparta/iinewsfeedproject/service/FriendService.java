@@ -1,8 +1,6 @@
 package com.sparta.iinewsfeedproject.service;
 
 import com.sparta.iinewsfeedproject.dto.FriendDto;
-import com.sparta.iinewsfeedproject.dto.FriendRequestDto;
-import com.sparta.iinewsfeedproject.dto.FriendResponseDto;
 import com.sparta.iinewsfeedproject.entity.Friend;
 import com.sparta.iinewsfeedproject.entity.User;
 import com.sparta.iinewsfeedproject.exception.FriendNotFoundException;
@@ -35,15 +33,18 @@ public class FriendService {
     }
 
     public List<FriendDto> getAcceptedFriends(Long userId) {
-        Optional<User> fromUser = userRepository.findById(userId);
-        if (fromUser.isEmpty()) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
             throw new UserNotFoundException("존재하지 않는 유저번호 입니다.");
         }
-        List<Friend> friends = friendRepository.findByFromUserIdAndStatus(userId, "ACCEPT");
+
+        List<Friend> friends = friendRepository.findByFromUserIdAndStatusOrToUserIdAndStatus(userId, "ACCEPT", userId, "ACCEPT");
         return friends.stream()
                 .map(friend -> {
-                    Optional<User> toUser = userRepository.findById(friend.getToUserId());
-                    return new FriendDto(friend.getToUserId(), toUser.get().getName(), toUser.get().getEmail());
+                    Long otherUserId = friend.getFromUser().getId().equals(userId) ? friend.getToUserId() : friend.getFromUser().getId();
+                    User otherUser = userRepository.findById(otherUserId)
+                            .orElseThrow(() -> new UserNotFoundException("존재하지 않는 유저번호 입니다: " + otherUserId));
+                    return new FriendDto(otherUserId, otherUser.getName(), otherUser.getEmail());
                 })
                 .collect(Collectors.toList());
     }

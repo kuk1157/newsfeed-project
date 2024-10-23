@@ -24,6 +24,7 @@ public class User extends Timestamped  {
     @OneToMany(mappedBy = "user")
     private List<Post> post = new ArrayList<>();
 
+    @Setter
     @Column(name="name")
     @Comment(value = "이름")
     private String name;

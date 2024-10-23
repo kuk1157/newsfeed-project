@@ -15,8 +15,8 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
     // 특정 친구 관계 삭제
     void deleteByFromUserIdAndToUserId(Long fromUserId, Long userId);
 
-    // 특정 사용자의 친구 목록 중 수락된 친구만 조회
-    List<Friend> findByFromUserIdAndStatus(Long fromUserId, String status);
+    // 특정 사용자가 fromUserId 또는 toUserId로 있는 친구 관계 조회
+    List<Friend> findByFromUserIdAndStatusOrToUserIdAndStatus(Long fromUserId, String fromStatus, Long toUserId, String toStatus);
 
     // 요청받은 유저가 fromUserId에 존재할 경우 삭제
     void deleteByFromUserId(Long fromUserId);
