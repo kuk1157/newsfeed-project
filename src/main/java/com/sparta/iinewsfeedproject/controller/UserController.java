@@ -1,8 +1,7 @@
 package com.sparta.iinewsfeedproject.controller;
 
 import com.sparta.iinewsfeedproject.dto.*;
-import com.sparta.iinewsfeedproject.exception.IncorrectPasswordException;
-import com.sparta.iinewsfeedproject.exception.UserNotFoundException;
+import com.sparta.iinewsfeedproject.entity.User;
 import com.sparta.iinewsfeedproject.service.FriendService;
 import com.sparta.iinewsfeedproject.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
