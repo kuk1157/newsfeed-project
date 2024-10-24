@@ -39,9 +39,12 @@ public class UserService {
                     throw new IllegalArgumentException("중복된 이메일 입니다");
                 });
 
-        String password = passwordEncoder.encode(reqDto.getPassword());
-        User user = new User(reqDto.getName(), reqDto.getEmail());
-        user.savePassword(password);
+//        String password = passwordEncoder.encode(reqDto.getPassword());
+//        User user = new User(reqDto.getName(), reqDto.getEmail());
+//        user.savePassword(password);
+
+        User user = new User();
+        user.createUser(reqDto.getName(), reqDto.getEmail(), reqDto.getPassword());
 
         userRepository.save(user);
 
@@ -68,7 +71,7 @@ public class UserService {
         return new UserResponseDto(user);
     }
 
-    public UserResponseDto showUser(Long userId) {
+    public UserResponseDto findById(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new NullPointerException("해당 유저는 찾을 수 없습니다")
         );
@@ -79,14 +82,14 @@ public class UserService {
     @Transactional
     public UserUpdateResponseDto updateName(String name, HttpServletRequest req) {
         User user = (User) req.getAttribute("user");
-        user.setName(name);
+        user.updateName(name);
         userRepository.save(user);
 
         return new UserUpdateResponseDto(user);
     }
 
     @Transactional
-    public Object updatePassword(PasswordRequestDto passwordDto, HttpServletRequest httpReq) {
+    public UserUpdateResponseDto updatePassword(PasswordRequestDto passwordDto, HttpServletRequest httpReq) {
         User user = (User) httpReq.getAttribute("user");
 
         String pastPassword = passwordDto.getPastPassword();
@@ -105,8 +108,8 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
-        String password = passwordEncoder.encode(newPassword);
-        user.savePassword(password);
+        //String password = passwordEncoder.encode(newPassword);
+        user.updatePassword(newPassword);
         userRepository.save(user);
 
         return new UserUpdateResponseDto(user);

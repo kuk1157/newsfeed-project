@@ -56,25 +56,25 @@ public class UserController {
     }
 
     @GetMapping("/{userid}")
-    public ResponseEntity<UserResponseDto> showUser(@PathVariable Long userid) {
+    public ResponseEntity<UserResponseDto> findById(@PathVariable Long userid) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(userService.showUser(userid));
+                .body(userService.findById(userid));
     }
 
     @PutMapping("/name")
-    public ResponseEntity<UserUpdateResponseDto> updateName(@RequestBody Map<String, String> request, HttpServletRequest httpReq) {
-        String name = request.get("name");
+    public ResponseEntity<UserUpdateResponseDto> updateName(@RequestBody NameRequestDto requestDto, HttpServletRequest httpReq) {
+        String name = requestDto.getName();
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userService.updateName(name, httpReq));
     }
 
     @PutMapping("/password")
-    public ResponseEntity<UserUpdateResponseDto> updatePassword(@RequestBody PasswordRequestDto passwordDto, HttpServletRequest HttpReq) {
+    public ResponseEntity<UserUpdateResponseDto> updatePassword(@Valid @RequestBody PasswordRequestDto passwordDto, HttpServletRequest HttpReq) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body((UserUpdateResponseDto) userService.updatePassword(passwordDto, HttpReq));
+                .body(userService.updatePassword(passwordDto, HttpReq));
     }
 
     @GetMapping("/{userId}/friends")
