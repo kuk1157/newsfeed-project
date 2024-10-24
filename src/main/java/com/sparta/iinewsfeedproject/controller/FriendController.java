@@ -20,8 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FriendController {
 
-    @Autowired
-    private FriendService friendService;
+    private final FriendService friendService;
 
     @PostMapping
     public ResponseEntity<FriendResponseDto> createFriend(@RequestBody FriendRequestDto requestDto, HttpServletRequest request) {

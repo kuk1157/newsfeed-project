@@ -5,8 +5,6 @@ import com.sparta.iinewsfeedproject.dto.*;
 import com.sparta.iinewsfeedproject.entity.User;
 import com.sparta.iinewsfeedproject.exception.CustomException;
 import com.sparta.iinewsfeedproject.exception.ErrorCode;
-import com.sparta.iinewsfeedproject.exception.IncorrectPasswordException;
-import com.sparta.iinewsfeedproject.exception.UserNotFoundException;
 import com.sparta.iinewsfeedproject.jwt.JwtUtil;
 import com.sparta.iinewsfeedproject.repository.FriendRepository;
 import com.sparta.iinewsfeedproject.repository.PostRepository;
@@ -16,9 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -27,13 +23,9 @@ import java.util.Optional;
 public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-
-    @Autowired
     private final UserRepository userRepository;
-    @Autowired
-    private FriendRepository friendRepository;
-    @Autowired
-    private PostRepository postRepository;
+    private final FriendRepository friendRepository;
+    private final PostRepository postRepository;
 
     public UserResponseDto signUp(SignupRequestDto reqDto){
         userRepository.findByEmail(reqDto.getEmail())

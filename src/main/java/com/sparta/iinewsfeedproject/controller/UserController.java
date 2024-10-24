@@ -22,7 +22,6 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
-    @Autowired
     private final FriendService friendService;
 
     @PostMapping
