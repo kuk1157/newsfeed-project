@@ -33,7 +33,7 @@ public class UserService {
     @Autowired
     private PostRepository postRepository;
 
-    public UserResponseDto signUp(SignupRequestDto reqDto){
+    public UserResponseDto signUp(SignupRequestDto reqDto) {
         userRepository.findByEmail(reqDto.getEmail())
                 .ifPresent(user -> {
                     throw new IllegalArgumentException("중복된 이메일 입니다");
@@ -122,15 +122,19 @@ public class UserService {
 
         User user = userOptional.get();
 
+        // 비밀번호 검증
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IncorrectPasswordException("비밀번호가 일치하지 않습니다.");
         }
 
+        // 연관된 친구 관계 삭제
         friendRepository.deleteByFromUserId(userId);
         friendRepository.deleteByToUserId(userId);
 
+        // 연관된 게시물 삭제
         postRepository.deleteByUserId(userId);
 
+        // 사용자 비활성화 처리
         user.deactivate();
         userRepository.save(user);
     }
