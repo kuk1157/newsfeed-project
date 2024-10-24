@@ -20,11 +20,9 @@
 ![](readmeImage/wireframe.png)
 ㄴ 와이어프레임
 
-경로로 대체
+![](readmeImage/api_docs.PNG)
 
 ㄴ API명세서 상세
-
-링크 추후
 
 ㄴ [API명세서 링크](https://web.postman.co/workspace/d0e26f18-600f-4df1-8226-4463e76f38cb/collection/35385792-e156ca9d-e938-4f70-aa07-ac63c5987b48)
 
@@ -132,6 +130,6 @@
 - 친구 테이블의 고유번호(PK) 기준으로 삭제
 - 본인의 친구만 삭제 되도록
 
-
+![](readmeImage/Demonstration_video.mp4)
 
 
