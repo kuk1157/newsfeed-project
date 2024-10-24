@@ -1,6 +1,7 @@
 package com.sparta.iinewsfeedproject.controller;
 
 import com.sparta.iinewsfeedproject.dto.*;
+import com.sparta.iinewsfeedproject.entity.User;
 import com.sparta.iinewsfeedproject.service.FriendService;
 import com.sparta.iinewsfeedproject.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,12 +17,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
+    @Autowired
     private final FriendService friendService;
 
     @PostMapping
@@ -69,7 +72,11 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deactivateUser(@PathVariable Long userId, @RequestBody DeleteUserRequestDto deleteUserRequest) {
+    public ResponseEntity<Void> deactivateUser(@PathVariable Long userId, @RequestBody DeleteUserRequestDto deleteUserRequest, HttpServletRequest request) {
+        User user = (User) request.getAttribute("user");
+
+        if (!user.getId().equals(userId)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
         userService.deactivateUser(userId, deleteUserRequest.getPassword());
         return ResponseEntity.noContent().build();
     }
