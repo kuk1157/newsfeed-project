@@ -27,7 +27,7 @@ public class UserService {
     private final FriendRepository friendRepository;
     private final PostRepository postRepository;
 
-    public UserResponseDto signUp(SignupRequestDto reqDto){
+    public UserResponseDto signUp(SignupRequestDto reqDto) {
         userRepository.findByEmail(reqDto.getEmail())
                 .ifPresent(user -> {
                     throw new CustomException(ErrorCode.DUPLICATION_EMAIL);
@@ -116,15 +116,19 @@ public class UserService {
 
         User user = userOptional.get();
 
+        // 비밀번호 검증
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new CustomException(ErrorCode.NOT_MATCH_PASSWORD);
         }
 
+        // 연관된 친구 관계 삭제
         friendRepository.deleteByFromUserId(userId);
         friendRepository.deleteByToUserId(userId);
 
+        // 연관된 게시물 삭제
         postRepository.deleteByUserId(userId);
 
+        // 사용자 비활성화 처리
         user.deactivate();
         userRepository.save(user);
     }
