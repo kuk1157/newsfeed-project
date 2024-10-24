@@ -1,11 +1,9 @@
 package com.sparta.iinewsfeedproject.controller;
 
 
-import com.sparta.iinewsfeedproject.dto.ErrorResponseDto;
 import com.sparta.iinewsfeedproject.dto.FriendRequestDto;
 import com.sparta.iinewsfeedproject.dto.FriendResponseDto;
 import com.sparta.iinewsfeedproject.entity.User;
-import com.sparta.iinewsfeedproject.exception.FriendNotFoundException;
 import com.sparta.iinewsfeedproject.service.FriendService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -22,41 +20,37 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FriendController {
 
-    @Autowired
-    private FriendService friendService;
+    private final FriendService friendService;
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<FriendResponseDto> createFriend(@RequestBody FriendRequestDto requestDto, HttpServletRequest request) {
         User fromUser = getUser(request);
-        FriendResponseDto friend = friendService.createFriend(requestDto,fromUser);
+        FriendResponseDto friend = friendService.createFriend(requestDto, fromUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(friend);
     }
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<FriendResponseDto>> getFriends(HttpServletRequest request) {
-//        User ToUser = getUser(request); - 로그인한 본인의 요청목록만 추후 넣을예정
-        List<FriendResponseDto> responseDto = friendService.getFriends();
+        User toUser = getUser(request);
+        List<FriendResponseDto> responseDto = friendService.getFriends(toUser);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     @PutMapping("/{friendId}")
-    public Long updateFriend(@PathVariable Long friendId, @RequestBody FriendRequestDto requestDto) {
-        return friendService.updateFriend(friendId,requestDto);
+    public Long updateFriend(@PathVariable Long friendId, @RequestBody FriendRequestDto requestDto, HttpServletRequest request) {
+        User toUser = getUser(request);
+        return friendService.updateFriend(friendId,requestDto,toUser);
     }
 
-    @DeleteMapping ("/{fromUserId}/friend/{userId}")
-    public ResponseEntity<Void> deleteFriend(@PathVariable Long fromUserId, @PathVariable Long userId) {
-        friendService.deleteFriend(fromUserId, userId);
+    @DeleteMapping("/{friendId}")
+    public ResponseEntity<Void> deleteFriend(@PathVariable Long friendId, HttpServletRequest request) {
+        // JWT 토큰에서 추출한 사용자
+        User user = (User) request.getAttribute("user");
+        friendService.deleteFriend(friendId, user.getId());
         return ResponseEntity.ok().build();
     }
 
-    @ExceptionHandler(FriendNotFoundException.class)
-    public ResponseEntity<ErrorResponseDto> handleFriendNotFoundException(FriendNotFoundException ex) {
-        ErrorResponseDto errorResponse = new ErrorResponseDto(404, ex.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    }
-
     public User getUser(HttpServletRequest request) {
-        return (User)request.getAttribute("user");
+        return (User) request.getAttribute("user");
     }
 }
