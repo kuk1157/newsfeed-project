@@ -1,5 +1,6 @@
 package com.sparta.iinewsfeedproject.entity;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,13 +43,17 @@ public class User extends Timestamped  {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime deletedAt;
 
-    public User(String name, String email) {
+    public void createUser(String name, String email, String password){
         this.name = name;
         this.email = email;
+        this.password = BCrypt.withDefaults().hashToString(BCrypt.MIN_COST, password.toCharArray());
     }
 
-    public void savePassword(String password) {
-        this.password = password;
+    public void updateName(String name){
+        this.name = name;
+    }
+    public void updatePassword(String password) {
+        this.password = BCrypt.withDefaults().hashToString(BCrypt.MIN_COST, password.toCharArray());
     }
 
     public void deactivate() {
