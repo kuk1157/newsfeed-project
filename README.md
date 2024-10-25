@@ -20,7 +20,7 @@
 ![](readmeImage/wireframe.png)
 ㄴ 와이어프레임
 
-![](readmeImage/api_docs.PNG)
+![](readmeImage/api_docs.jpg)
 
 ㄴ API명세서 상세
 
